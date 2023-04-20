@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @SpringBootApplication
@@ -34,10 +33,10 @@ public class Main {
     }
 
     //Find
-    @GetMapping
-    public List<Customer> getCustomers() {
+    @GetMapping("{customerId}")
+    public Customer getCustomers(@PathVariable Integer customerId) {
 
-        return customerRepository.findAll();
+        return customerRepository.findById(customerId).orElseThrow(RuntimeException::new);
     }
 
 
@@ -54,14 +53,14 @@ public class Main {
 
     //Delete
     @DeleteMapping("{customerId}") //Get customerId through url : localhost:8080/api/v1/customer/1(customerId number)
-    public void deleteCustomerById(@PathVariable("customerId") Integer customerId) {
+    public void deleteCustomerById(@PathVariable Integer customerId) {
 
         customerRepository.deleteById(customerId);
     }
 
     //Update
     @PutMapping("{customerId}")
-    public void updateCustomerDetails(@PathVariable("customerId") Integer customerId, @RequestBody NewCustomerRequest newCustomerRequest) {
+    public void updateCustomerDetails(@PathVariable Integer customerId, @RequestBody NewCustomerRequest newCustomerRequest) {
 
         Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
         if (optionalCustomer.isPresent()) {
