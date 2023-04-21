@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @SpringBootApplication
-@RestController
-@RequestMapping("api/v1/customers")
+@RestController // Acts as controller class
+
+//The following url path will be root and used to map requests.
+//To map request to child path of root path (eg: api/v1/customers/PROFILE), change the method level by inserting
+// @RequestMapping with the path "/PROFILE".
+@RequestMapping("api/v1/customers") // class level
 public class Main {
 
     record NewCustomerRequest(String name, String email, Integer age) {} //POJO
@@ -27,14 +31,15 @@ public class Main {
         SpringApplication.run(Main.class, args);
     }
 
+    @Autowired //Though Spring detects automatically, it is still recommended to put annotation for readability
     public Main(CustomerRepository customerRepository) {
 
         this.customerRepository = customerRepository; //dependency injection
     }
 
     //Find
-    @GetMapping("{customerId}")
-    public Customer getCustomers(@PathVariable Integer customerId) {
+    @GetMapping("{customerId}") // method level (path will be api/v1/customers/id)
+    public Customer getCustomers(@PathVariable Integer customerId) { //don't need to put (value = ?) to PathVariable if value and field have same names.
 
         return customerRepository.findById(customerId).orElseThrow(RuntimeException::new);
     }
@@ -71,7 +76,7 @@ public class Main {
             customerRepository.save(existingCustomer);
         } else {
 
-            throw new RuntimeException("Uff");
+            throw new RuntimeException("There was problem updating details");
         }
     }
 }
